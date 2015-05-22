@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : arbiter_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 14:31:41 2015
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+Number of ports:                7
+Number of nets:                 8
+Number of cells:                5
+Number of references:           3
+
+Combinational area:         16.588800
+Noncombinational area:      44.236801
+Net Interconnect area:       0.866332  
+
+Total cell area:            60.825602
+Total area:                 61.691933

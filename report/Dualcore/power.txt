@@ -1,0 +1,63 @@
+****************************************
+Report : power
+        -analysis_effort high
+Design : dualcore_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 13:51:11 2015
+****************************************
+
+
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+
+Operating Conditions: TYPICAL   Library: saed90nm_typ
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+dualcore_1             35000             saed90nm_typ
+processor_2            16000             saed90nm_typ
+processor_3            16000             saed90nm_typ
+cacheL2_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH16
+                       16000             saed90nm_typ
+arbiter                ForQA             saed90nm_typ
+cache_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH4_0
+                       8000              saed90nm_typ
+alu_OPCODE_LENGTH4_DATA_WIDTH8_0
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_0
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_4
+                       8000              saed90nm_typ
+cache_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH4_1
+                       8000              saed90nm_typ
+alu_OPCODE_LENGTH4_DATA_WIDTH8_1
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_1
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_2
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_3
+                       8000              saed90nm_typ
+fifo_DATA_WIDTH4_NUM_ENTRIES2_5
+                       8000              saed90nm_typ
+
+
+Global Operating Voltage = 1.2  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000ff
+    Time Units = 1ns
+    Dynamic Power Units = 1uW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  = 273.2139 uW   (61%)
+  Net Switching Power  = 174.2537 uW   (39%)
+                         ---------
+Total Dynamic Power    = 447.4676 uW  (100%)
+
+Cell Leakage Power     = 154.8283 uW
+

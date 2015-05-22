@@ -1,0 +1,48 @@
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+        -sort_by group
+Design : dualcore_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 13:58:50 2015
+****************************************
+
+Operating Conditions: TYPICAL   Library: saed90nm_typ
+Wire Load Model Mode: enclosed
+
+  Startpoint: reset (input port)
+  Endpoint: L2/data_out_reg[0]
+            (positive level-sensitive latch)
+  Path Group: (none)
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  dualcore_1         35000                 saed90nm_typ
+  cacheL2_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH16
+                     16000                 saed90nm_typ
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  input external delay                                    0.00       0.00 r
+  reset (in)                                              0.00       0.00 r
+  L2/reset (cacheL2_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH16)
+                                                          0.00       0.00 r
+  L2/U317/ZN (INVX0)                                      0.47       0.47 f
+  L2/U316/Q (AND2X1)                                      0.30       0.77 f
+  L2/U313/QN (NAND3X0)                                    0.16       0.93 r
+  L2/U304/QN (NOR2X0)                                     0.12       1.05 f
+  L2/U300/QN (NAND3X0)                                    0.13       1.18 r
+  L2/U299/ZN (INVX0)                                      0.11       1.29 f
+  L2/U292/Q (AND2X1)                                      0.13       1.42 f
+  L2/U291/QN (NAND4X0)                                    0.13       1.55 r
+  L2/U284/Q (OA222X1)                                     0.17       1.72 r
+  L2/U271/QN (NAND4X0)                                    0.08       1.80 f
+  L2/data_out_reg[0]/D (LATCHX1)                          0.03       1.84 f
+  data arrival time                                                  1.84
+  --------------------------------------------------------------------------
+  (Path is unconstrained)
+
+

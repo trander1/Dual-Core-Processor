@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : dualcore_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 13:50:53 2015
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+Number of ports:               46
+Number of nets:                90
+Number of cells:               30
+Number of references:           7
+
+Combinational area:       16132.608079
+Noncombinational area:    16933.478485
+Net Interconnect area:    1849.329565  
+
+Total cell area:          33066.086564
+Total area:               34915.416129

@@ -1,0 +1,38 @@
+****************************************
+Report : power
+        -analysis_effort high
+Design : cache_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 15:48:09 2015
+****************************************
+
+
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+
+Operating Conditions: TYPICAL   Library: saed90nm_typ
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+cache_1                8000              saed90nm_typ
+
+
+Global Operating Voltage = 1.2  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000ff
+    Time Units = 1ns
+    Dynamic Power Units = 1uW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  =   8.1153 uW   (70%)
+  Net Switching Power  =   3.4517 uW   (30%)
+                         ---------
+Total Dynamic Power    =  11.5670 uW  (100%)
+
+Cell Leakage Power     =  16.9944 uW
+

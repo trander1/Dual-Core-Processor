@@ -1,0 +1,47 @@
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+        -sort_by group
+Design : processor_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 15:26:56 2015
+****************************************
+
+Operating Conditions: TYPICAL   Library: saed90nm_typ
+Wire Load Model Mode: enclosed
+
+  Startpoint: reset_in (input port)
+  Endpoint: L1/cache_block_reg[1][0]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: (none)
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  processor_1        16000                 saed90nm_typ
+  cache_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH4
+                     8000                  saed90nm_typ
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  input external delay                                    0.00       0.00 f
+  reset_in (in)                                           0.00       0.00 f
+  U347/Z (NBUFFX2)                                        0.33       0.33 f
+  L1/reset (cache_TAG_WIDTH4_DATA_WIDTH8_ENTRIES_WIDTH4)
+                                                          0.00       0.33 f
+  L1/U62/QN (NOR2X0)                                      0.23       0.56 r
+  L1/U48/QN (NAND2X1)                                     0.14       0.71 f
+  L1/U24/ZN (INVX0)                                       0.11       0.81 r
+  L1/U155/Q (AND3X1)                                      0.13       0.95 r
+  L1/U25/QN (NAND2X1)                                     0.09       1.04 f
+  L1/U134/Q (AND3X1)                                      0.13       1.17 f
+  L1/U14/QN (NOR2X0)                                      0.17       1.35 r
+  L1/U126/Q (AO22X1)                                      0.15       1.50 r
+  L1/cache_block_reg[1][0]/D (DFFX1)                      0.04       1.54 r
+  data arrival time                                                  1.54
+  --------------------------------------------------------------------------
+  (Path is unconstrained)
+
+

@@ -1,0 +1,56 @@
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+        -sort_by group
+Design : cacheL2
+Version: D-2010.03-SP4
+Date   : Mon May  4 14:57:01 2015
+****************************************
+
+Operating Conditions: TYPICAL   Library: saed90nm_typ
+Wire Load Model Mode: enclosed
+
+  Startpoint: vector_in[11]
+              (input port)
+  Endpoint: cache_block_reg[13][0]/CLK (internal pin)
+  Path Group: (none)
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  cacheL2            16000                 saed90nm_typ
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  input external delay                                    0.00       0.00 r
+  vector_in[11] (in)                                      0.00       0.00 r
+  U849/Q (XOR2X1)                                         0.28       0.28 r
+  U848/QN (NAND4X0)                                       0.09       0.37 f
+  U847/ZN (INVX0)                                         0.08       0.45 r
+  U841/QN (NOR2X0)                                        0.11       0.57 f
+  U835/QN (NAND2X0)                                       0.13       0.69 r
+  U828/QN (NOR2X0)                                        0.13       0.82 f
+  U827/ZN (INVX0)                                         0.08       0.90 r
+  U821/QN (NOR2X0)                                        0.10       0.99 f
+  U815/QN (NAND2X0)                                       0.10       1.10 r
+  U802/QN (NOR2X0)                                        0.15       1.25 f
+  U801/QN (NAND3X0)                                       0.15       1.40 r
+  U800/ZN (INVX0)                                         0.11       1.51 f
+  U787/QN (NAND2X0)                                       0.11       1.62 r
+  U786/ZN (INVX0)                                         0.10       1.72 f
+  U785/Q (AND3X1)                                         0.15       1.87 f
+  U779/QN (NAND2X0)                                       0.10       1.97 r
+  U772/QN (NOR2X0)                                        0.12       2.09 f
+  U771/ZN (INVX0)                                         0.11       2.20 r
+  U596/QN (NOR3X0)                                        0.13       2.34 f
+  U513/Q (AND3X1)                                         0.14       2.47 f
+  U497/QN (AOI22X1)                                       0.15       2.62 r
+  U496/QN (NAND3X0)                                       0.11       2.73 f
+  cache_block_reg[13][0]/CLK (LATCHX1)                    0.05       2.78 f
+  data arrival time                                                  2.78
+  --------------------------------------------------------------------------
+  (Path is unconstrained)
+
+

@@ -1,0 +1,328 @@
+`timescale 1ns / 1ps
+
+`define FLASH		2'b00
+`define READ		2'b01
+`define WRITE		2'b10
+
+`define MISS	1'b0
+`define HIT		1'b1
+
+`define CACHE_ENABLE		1'b1
+
+`define TAG_ENTRY_INVALID	1'b0
+`define TAG_ENTRY_VALID		1'b1
+
+`define LOG2(width) 	(width<=2)?1:\
+							(width<=4)?2:\
+							(width<=8)?3:\
+							(width<=16)?4:\
+							(width<=32)?5:\
+							(width<=64)?6:\
+							(width<=128)?7:\
+							(width<=256)?8:\
+							-1
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    12:33:56 03/01/2015 
+// Design Name: 
+// Module Name:    cache 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module cacheL2(
+    data_out, hit_miss_out,    
+    vector_in, enable, reset, clk  
+    );
+// parameters for the module	
+parameter TAG_WIDTH = 4;			// width of the tag
+parameter DATA_WIDTH = 8;			// width of the data
+parameter ENTRIES_WIDTH = 16;	// # of entries
+parameter OPCODE_WIDTH = 2;		// width of opcode
+parameter LINE_WIDTH = TAG_WIDTH+DATA_WIDTH+OPCODE_WIDTH; // length of the input vector 
+parameter ENTRIES_BIT_WIDTH = `LOG2(ENTRIES_WIDTH); // length of the input vector 
+// outputs of the module
+output reg [DATA_WIDTH-1:0]data_out;// final output of the block
+output reg hit_miss_out;				// outputs the hit/miss of the block
+// inputs of the module
+input [LINE_WIDTH-1:0]vector_in;		// input vector
+input clk;									// input clk 
+input enable;								// input enable
+input reset;								// input reset
+// the final cache block vector array
+reg [DATA_WIDTH-1:0]cache_block[ENTRIES_WIDTH-1:0];
+// cache tag entries
+reg [TAG_WIDTH-1:0]tag_entries[ENTRIES_WIDTH-1:0];
+// cache valid bit entries
+reg [ENTRIES_WIDTH-1:0]tag_valid_invalid_bit;
+// local module variables
+reg [OPCODE_WIDTH-1:0]control_in;	// control bits for the module obtained from the input vector
+reg [TAG_WIDTH-1:0]tag_in;		// tag bits for the module obtained from the input vector
+reg [DATA_WIDTH-1:0]data_in;	// data bits for the module obtained from the input vector
+reg [DATA_WIDTH-1:0]temp_data_out;	// data bits for the module obtained from the input vector
+reg hit_entry;						// internal hit/miss entry used between tasks
+reg [ENTRIES_BIT_WIDTH:0]mru_entry;		// tag bits for replacement policy
+// count variable
+reg [ENTRIES_BIT_WIDTH:0]for_cnt_entries;	// general variable for the FOR loop
+
+// initialize the variables
+//initial 
+//begin	
+	// initializing the various required regs
+	//for(for_cnt_entries = {ENTRIES_WIDTH-1{1'b0}}; for_cnt_entries < ENTRIES_WIDTH; for_cnt_entries = for_cnt_entries + 1)
+	//begin
+//		tag_entries[for_cnt_entries]={TAG_WIDTH-1{1'b0}};
+		//cache_block[for_cnt_entries]={DATA_WIDTH-1{1'b0}};		
+	//end	
+	// $display("TAG:%d, DATA:%d, ENTRIES:%d, LINE: %d",TAG_WIDTH,DATA_WIDTH,ENTRIES_WIDTH,LINE_WIDTH);
+//end
+
+// task for reading the cache entries
+task cache_read_task;
+	output [DATA_WIDTH-1:0]data_task_out;
+	output hit_miss;
+	output [ENTRIES_BIT_WIDTH:0]hit_cache_entry;
+	input [TAG_WIDTH-1:0]tag_check;
+	
+	// loop variable
+	reg [ENTRIES_BIT_WIDTH:0]entries_count;
+
+	begin: label_cache_read
+		entries_count = {ENTRIES_WIDTH-1{1'b0}};
+		data_task_out = {DATA_WIDTH-1{1'b0}};
+		hit_miss = `MISS;
+		hit_cache_entry = {ENTRIES_BIT_WIDTH{1'b0}};
+		// loop for going through the cache tag entries
+		repeat(ENTRIES_WIDTH)
+		begin
+			// $display("entries_count:%d, tag_entries:%d, tag_check:%d",entries_count,tag_entries[entries_count],tag_check);					
+			// check tag entry first
+			if(tag_entries[entries_count] == tag_check)
+			begin
+				// tag match, check the line validity/invalidity
+				// $display("READ TASK, tag_valid_invalid_bit:%d",tag_valid_invalid_bit[entries_count]);
+				if(tag_valid_invalid_bit[entries_count] == `TAG_ENTRY_VALID)
+				begin				
+					// line valid, give out the data, the cache entry, generate a hit and disable the loop
+					data_task_out = cache_block[entries_count];
+					mru_entry = entries_count;
+					hit_cache_entry = entries_count;					
+					hit_miss = `HIT;
+					// $display("DISABLED READ REPEAT, valid hit_cache_entry:%d",hit_cache_entry);
+					disable label_cache_read;
+				end else
+					begin
+						// line invalid, generate a hit and disable the loop
+//						data_task_out = cache_block[entries_count];
+						mru_entry = entries_count;
+						hit_cache_entry = entries_count;						
+						hit_miss = `HIT;
+						// $display("DISABLED READ REPEAT, invalid hit_cache_entry:%d",hit_cache_entry);
+						disable label_cache_read;
+					end
+			end // tag not present		
+			entries_count = entries_count + 1;
+		end
+	end
+endtask
+
+// task for searching available cache entry
+task cache_search_task;
+	output [DATA_WIDTH-1:0]data_task_out;
+	output hit_miss;
+	output [ENTRIES_BIT_WIDTH:0]hit_cache_entry;
+	input [TAG_WIDTH-1:0]tag_check;
+	
+	// loop variable
+	reg [ENTRIES_BIT_WIDTH:0]entries_count;
+
+	begin: label_cache_read
+		entries_count = {ENTRIES_WIDTH-1{1'b0}};
+		data_task_out = {DATA_WIDTH-1{1'b0}};
+		hit_miss = 1'b0;
+		hit_cache_entry = {ENTRIES_BIT_WIDTH{1'b0}};
+		// loop for going through the cache tag entries
+		repeat(ENTRIES_WIDTH)
+		begin
+			// $display("entries_count:%d, tag_entries:%d, tag_check:%d",entries_count,tag_entries[entries_count],tag_check);					
+			// check the line validity/invalidity
+			if(tag_valid_invalid_bit[entries_count] == tag_check)
+			begin				
+				// line invalid, give out the data, the cache entry, generate a hit and disable the loop
+//				data_task_out = cache_block[entries_count];
+				mru_entry = entries_count;				
+				hit_cache_entry = entries_count;
+				hit_miss = `HIT;
+				// $display("DISABLED READ REPEAT, hit_cache_entry:%d",hit_cache_entry);
+				disable label_cache_read;
+			end else
+				begin
+					// line invalid, generate a hit and disable the loop
+//						data_task_out = cache_block[entries_count];
+					if(entries_count > ENTRIES_WIDTH)
+					begin
+						hit_cache_entry = entries_count;
+						hit_miss = `MISS;
+//					$display("DISABLED READ REPEAT, hit_cache_entry:%d",hit_cache_entry);
+//					disable label_cache_read;
+					end
+				end
+			entries_count = entries_count + 1;
+		end
+	end
+endtask
+
+// task for writing a cache entry
+task cache_write_task;
+output [DATA_WIDTH-1:0]data_task_out;
+output hit_miss;
+output [ENTRIES_BIT_WIDTH:0]hit_cache_entry;
+input [TAG_WIDTH-1:0]tag_check;
+input [ENTRIES_WIDTH-1:0]tag_replacement_entry;
+input [DATA_WIDTH-1:0]data_task_in;
+
+begin	
+	hit_miss = 1'b0;
+	hit_cache_entry = {ENTRIES_BIT_WIDTH{1'b0}};	
+	// check the cache for the validity of the tag to be written
+	cache_read_task(data_task_out,hit_miss,hit_cache_entry,tag_check);
+	if(hit_miss == `HIT)
+	begin
+		// HIT: cache entry available, data overwritten in the cache entry
+		// $display("Cache Read HIT, hit_miss:%d, hit_cache_entry:%d, tag_check:%d, data_task_in:%d",hit_miss, hit_cache_entry, tag_check, data_task_in);
+//		tag_valid_invalid_bit[hit_cache_entry] = `TAG_ENTRY_VALID;		
+		cache_block[hit_cache_entry] = data_task_in;		
+	end else 
+		begin			
+			// MISS: cache entry not-available, find the next available location
+//			tag_miss_out = tag_entries[mru_entry];
+//			data_miss_out = cache_block[mru_entry];
+			// $display("Cache Read MISS");
+			cache_search_task(data_task_out,hit_miss,hit_cache_entry,`TAG_ENTRY_INVALID);			
+			if(hit_miss == `HIT)
+			begin
+				// HIT: cache has an availalbe entry, use that location for storing new data
+				// $display("Cache Search HIT, hit_miss:%d, hit_cache_entry:%d, tag_check:%d, data_task_in:%d",hit_miss, hit_cache_entry, tag_check, data_task_in);
+				tag_valid_invalid_bit[hit_cache_entry] = `TAG_ENTRY_VALID;
+				tag_entries[hit_cache_entry] = tag_check;
+				cache_block[hit_cache_entry] = data_task_in;
+			end else	
+				begin
+					// MISS: cache full, DO SOMETHING BETTER THAN THIS
+					// currently filling a single location of the cache
+					// $display("Cache Full MISS, hit_miss:%d, hit_cache_entry:%d, tag_replacement_entry:%d, data_task_in:%d",hit_miss, hit_cache_entry, tag_replacement_entry, data_task_in);
+					tag_valid_invalid_bit[tag_replacement_entry] = `TAG_ENTRY_VALID;
+					tag_entries[tag_replacement_entry] = tag_check;
+					cache_block[tag_replacement_entry] = data_task_in;
+				end
+		end		
+	data_task_out = {DATA_WIDTH-1{1'b0}};	
+	// $display("Cache out, tag_miss_out:%d, data_miss_out:%d", tag_miss_out, data_miss_out);
+end	
+endtask
+
+always @(vector_in or reset or enable)
+// always @(posedge clk)
+begin
+	if(reset) 
+	begin
+		data_out = {DATA_WIDTH-1{1'b0}};
+		temp_data_out = {DATA_WIDTH-1{1'b0}};		
+	//	hit_miss_out = 1'b0;
+		control_in = {OPCODE_WIDTH-1{1'b0}};
+		tag_in = {TAG_WIDTH-1{1'b0}};
+		data_in = {DATA_WIDTH{1'b0}};
+		for_cnt_entries = {ENTRIES_BIT_WIDTH{1'b0}};
+		mru_entry = {ENTRIES_WIDTH-1{1'b0}};	
+		// initializing the various required regs
+		for(for_cnt_entries = {ENTRIES_WIDTH-1{1'b0}}; for_cnt_entries < ENTRIES_WIDTH; for_cnt_entries = for_cnt_entries + 1)
+		begin
+	//		tag_entries[for_cnt_entries]={TAG_WIDTH-1{1'b0}};
+//			cache_block[for_cnt_entries]={DATA_WIDTH-1{1'b0}};
+			tag_valid_invalid_bit[for_cnt_entries] = `TAG_ENTRY_VALID;
+		end
+		tag_entries[0] = 4'b1001;
+		cache_block[0] = 8'b1011_0010;
+		tag_entries[1] = 4'b1010;
+		cache_block[1] = 8'b0101_0101;
+		tag_entries[2] = 4'b0000;
+		cache_block[2] = 8'b0000_0000;
+		tag_entries[3] = 4'b1110;
+		cache_block[3] = 8'b1010_1010;
+		tag_entries[4] = 4'b1011;
+		cache_block[4] = 8'b0010_0001;
+		tag_entries[5] = 4'b0101;
+		cache_block[5] = 8'b0111_0001;
+		tag_entries[6] = 4'b0111;
+		cache_block[6] = 8'b0001_1110;
+		tag_entries[7] = 4'b1101;
+		cache_block[7] = 8'b1111_1111;
+		tag_entries[8] = 4'b1000;
+		cache_block[8] = 8'b0000_0100;
+		tag_entries[9] = 4'b1111;
+		cache_block[9] = 8'b1001_1101;
+		tag_entries[10] = 4'b0001;
+		cache_block[10] = 8'b1001_1100;
+		tag_entries[11] = 4'b0100;
+		cache_block[11] = 8'b0100_0100;
+		tag_entries[12] = 4'b1100;
+		cache_block[12] = 8'b1010_1010;
+		tag_entries[13] = 4'b0110;
+		cache_block[13] = 8'b1111_1111;
+		tag_entries[14] = 4'b0011;
+		cache_block[14] = 8'b0000_1111;
+		tag_entries[15] = 4'b0010;
+		cache_block[15] = 8'b1100_0000;
+	end else
+	begin
+		if(enable == `CACHE_ENABLE)begin
+			control_in = vector_in[LINE_WIDTH-1:LINE_WIDTH-OPCODE_WIDTH];
+			tag_in = vector_in[LINE_WIDTH-OPCODE_WIDTH-1:LINE_WIDTH-OPCODE_WIDTH-TAG_WIDTH];
+			data_in = vector_in[LINE_WIDTH-OPCODE_WIDTH-TAG_WIDTH-1:LINE_WIDTH-OPCODE_WIDTH-TAG_WIDTH-DATA_WIDTH];
+	//		 $display("control: %d,tag_in: %d,data_in: %d",control_in, tag_in, data_in);
+			case(control_in)
+				`FLASH: 
+					begin
+	//					$display("FLASH");
+						for(for_cnt_entries = {ENTRIES_WIDTH-1{1'b0}}; for_cnt_entries < ENTRIES_WIDTH; for_cnt_entries = for_cnt_entries + 1)
+						begin
+							tag_entries[for_cnt_entries]={TAG_WIDTH-1{1'b0}};						
+							tag_valid_invalid_bit[for_cnt_entries]=`TAG_ENTRY_INVALID;
+						end
+					end	
+				`READ: 
+					begin
+	//					$display("CACHE READ");
+						cache_read_task(data_out,hit_miss_out,hit_entry,tag_in);					
+						// $display("READ DATA %d", data_out);
+					end	
+				`WRITE: 
+					begin					
+						// $display("WRITE DATA %d", data_in);
+						cache_write_task(data_out,hit_miss_out,hit_entry,tag_in,mru_entry,data_in);						
+	//					$display("CACHE WRITE");
+					end
+				//`INVALID: data_out = 'b0;
+				default: 
+					begin
+	//					$display("INVALID");
+						data_out = 'bz;
+					end
+			endcase
+		end 
+		// else $display("SHOULD HAVE BEEN ENABLED");
+		// $display("enableL2:%d",enable);
+	end	
+end		
+endmodule
+

@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : alu_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 16:03:47 2015
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+Number of ports:               32
+Number of nets:               283
+Number of cells:              253
+Number of references:          27
+
+Combinational area:       2152.857613
+Noncombinational area:     721.612791
+Net Interconnect area:     154.383752  
+
+Total cell area:          2874.470404
+Total area:               3028.854155

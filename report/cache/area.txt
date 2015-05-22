@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : cache_1
+Version: D-2010.03-SP4
+Date   : Mon May  4 15:48:03 2015
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    saed90nm_typ (File: /opt/local/synopsys/E-2010.12-SP5-2/libraries/syn/saed90nm_typ.db)
+
+Number of ports:               26
+Number of nets:               312
+Number of cells:              268
+Number of references:          21
+
+Combinational area:       1831.219192
+Noncombinational area:    1825.689577
+Net Interconnect area:     179.653243  
+
+Total cell area:          3656.908769
+Total area:               3836.562012
